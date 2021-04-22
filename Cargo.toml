@@ -6,6 +6,7 @@ edition = "2018"
 license-file = "LICENSE"
 readme = "README.md"
 git = "https://github.com/Ewpratten/serialstudio-rs"
+description = "A simple Rust library to act as a data source for Serial Studio"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
