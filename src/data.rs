@@ -45,22 +45,26 @@ pub enum WidgetSubType {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DataSet {
     /// dataset title
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "t")]
-    pub title: String,
+    pub title: Option<String>,
 
     /// dataset value
     #[serde(rename = "v")]
     pub value: Value,
 
     /// dataset unit
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "u")]
     pub unit: Option<String>,
 
     /// dataset graph
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "g")]
     pub graph: Option<bool>,
 
     /// widget type
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "w")]
     pub w_type: Option<WidgetSubType>,
 }
@@ -73,6 +77,7 @@ pub struct DataGroup {
     pub title: String,
 
     /// Widget type
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "w")]
     pub widget_type: Option<WidgetType>,
 

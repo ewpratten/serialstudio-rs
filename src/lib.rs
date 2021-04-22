@@ -1,22 +1,23 @@
+//! A basic server implementation for [Serial Studio](https://github.com/Serial-Studio/Serial-Studio)
+
 use std::{
-    net::{TcpListener, ToSocketAddrs},
-    sync::{
-        mpsc::{self, Receiver, Sender},
-        Arc,
-    },
+    io::Write,
+    net::TcpListener,
+    sync::mpsc::{self, Sender},
 };
 
 pub mod data;
+pub mod friendly;
 
 use data::TelemetryFrame;
 use std::thread;
-
 
 struct State {
     new_frame: Option<TelemetryFrame>,
     running: bool,
 }
 
+/// A single-connection server for SerialStudio
 pub struct SerialStudioSource {
     running: bool,
     chan_to_thread: Option<Sender<State>>,
@@ -30,6 +31,7 @@ impl SerialStudioSource {
         }
     }
 
+    /// Start the server
     pub fn start(&mut self, bind_addr: String) {
         // Build a thread-safe channel for sending data
         let (tx, rx) = mpsc::channel();
@@ -52,16 +54,50 @@ impl SerialStudioSource {
             // Create a listener
             let listener = TcpListener::bind(bind_addr).unwrap();
 
-            for stream in listener.incoming() {
-                let stream = stream.unwrap();
+            loop {
+                println!("Waiting for a SerialStudio session to attach");
 
-                let new_data: State = rx.recv().unwrap();
+                // Get a stream
+                let stream = listener.accept();
 
-                println!("Connection established!");
+                if stream.is_ok() {
+                    let mut stream = stream.unwrap();
+                    println!("Connection established!");
+
+                    // Event loop
+                    loop {
+                        let new_data: State = rx.recv().unwrap();
+
+                        // Kill on stop
+                        if !new_data.running {
+                            return;
+                        }
+
+                        // Send frame
+                        if new_data.new_frame.is_some() {
+                            // Get data
+                            let obj = new_data.new_frame.unwrap();
+
+                            // Serialize
+                            let json = serde_json::to_string(&obj).unwrap();
+
+                            // Send
+                            let result = stream.0.write(format!("/*{}*/\n", json).as_bytes());
+
+                            if result.is_err() {
+                                println!("Failed to write telemetry update over TCP");
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                println!("SerialStudio disconnected");
             }
         });
     }
 
+    /// Stop the server
     pub fn stop(&mut self) {
         self.running = false;
         let _ = self
@@ -75,6 +111,7 @@ impl SerialStudioSource {
             .unwrap();
     }
 
+    /// Publish a new frame
     pub fn publish(&mut self, frame: TelemetryFrame) {
         if self.running && self.chan_to_thread.is_some() {
             let _ = self

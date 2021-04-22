@@ -1,8 +1,9 @@
+use serde_json::json;
 use serialstudio::{
-    data::{DataGroup, TelemetryFrame, DataSet},
+    data::{DataGroup, DataSet, TelemetryFrame, WidgetSubType},
     SerialStudioSource,
 };
-use serde_json::json;
+use std::{thread, time::Duration};
 
 fn main() {
     // Create server
@@ -22,16 +23,17 @@ fn main() {
             groups: vec![DataGroup {
                 title: "Main group".to_string(),
                 widget_type: None,
-                datasets: vec![
-                    DataSet {
-                        title: "Random Number".to_string(),
-                        value: json!(random),
-                        graph:None,
-                        unit: None,
-                        w_type: None
-                    }
-                ]
+                datasets: vec![DataSet {
+                    title: Some("Random Number".to_string()),
+                    value: json!(random),
+                    graph: None,
+                    unit: None,
+                    w_type: None,
+                }],
             }],
-        })
+        });
+
+        // Wait a bit
+        thread::sleep(Duration::from_millis(500));
     }
 }

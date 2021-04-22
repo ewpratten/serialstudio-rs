@@ -8,4 +8,3 @@ edition = "2018"
 [dependencies]
 serde = { verison = "1.0.125", features = ["derive"] }
 serde_json = "1.0.64"
-tokio = { version = "1.5.0", features = ["full"] }
