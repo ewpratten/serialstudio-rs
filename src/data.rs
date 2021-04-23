@@ -1,4 +1,6 @@
-// All objects in this file follow: https://github.com/Serial-Studio/Serial-Studio/wiki/Communication-Protocol
+//! Raw data types used by Serial Studio
+//!
+//! All objects in this file follow: https://github.com/Serial-Studio/Serial-Studio/wiki/Communication-Protocol
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

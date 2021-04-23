@@ -1,4 +1,4 @@
-//! Custom types for creating SerialStudio data frames
+//! Custom types for creating SerialStudio data frames.
 //! *Unfinished*
 
 use crate::data::{DataGroup, DataSet, WidgetSubType, WidgetType};

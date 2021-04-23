@@ -1,4 +1,24 @@
 //! A basic server implementation for [Serial Studio](https://github.com/Serial-Studio/Serial-Studio)
+//!
+//! ## Basic usage
+//!
+//! ```
+//! use serialstudio::SerialStudioSource;
+//!
+//! // Create server
+//! let mut server = SerialStudioSource::new();
+//! 
+//! // Start
+//! server.start("localhost:8019".to_string());
+//! 
+//! loop {
+//!     // Do stuff 
+//!     // ...
+//! }
+//! 
+//! // Stop
+//! server.stop();
+//! ```
 
 use std::{
     io::Write,
